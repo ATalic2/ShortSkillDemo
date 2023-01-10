@@ -103,15 +103,6 @@ public class HibernateConfiguration {
 		}
 		return dataSource;
 	}
-//    
-//    @Bean
-//    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-//    	LocalContainerEntityManagerFactoryBean entityManagerFactory = new LocalContainerEntityManagerFactoryBean();
-//    	entityManagerFactory.setDataSource(dataSource());
-//    	entityManagerFactory.setPersistenceProviderClass(HibernatePersistenceProvider.class);
-//    	entityManagerFactory.setPackagesToScan("job.resume.demo");
-//    	return entityManagerFactory;
-//    }
 
 	@Bean
 	public HibernateTransactionManager transactionManager() {
