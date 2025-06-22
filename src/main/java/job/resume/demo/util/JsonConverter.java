@@ -11,6 +11,14 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 
+/**
+ * Utility component for converting between Java objects and JSON strings.
+ * <p>
+ * Uses Jackson's {@link ObjectMapper} for serialization and deserialization,
+ * with configuration to ignore unknown properties and exclude null values.
+ * Supports Hibernate types via the {@link Hibernate5Module}.
+ * </p>
+ */
 @Component
 public class JsonConverter {
 
@@ -18,6 +26,9 @@ public class JsonConverter {
 
 	private ObjectMapper objectMapper;
 
+	/**
+     * Initializes the {@link ObjectMapper} with custom settings after construction.
+     */
 	@PostConstruct
 	public void init() {
 		objectMapper = new ObjectMapper();
@@ -26,6 +37,14 @@ public class JsonConverter {
 		objectMapper.registerModule(new Hibernate5Module());
 	}
 
+	/**
+     * Converts a JSON string to a Java object of the specified class.
+     *
+     * @param json the JSON string to convert
+     * @param clazz the target class type
+     * @param <T> the type of the returned object
+     * @return the deserialized Java object, or null if conversion fails
+     */
 	public <T> T fromJson(String json, Class<T> clazz) {
 		T result = null;
 		try {
@@ -36,6 +55,12 @@ public class JsonConverter {
 		return result;
 	}
 
+	/**
+     * Converts a Java object to its JSON string representation.
+     *
+     * @param object the Java object to serialize
+     * @return the JSON string, or null if conversion fails
+     */
 	public String toJson(Object object) {
 		String result = null;
 		try {

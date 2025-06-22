@@ -10,61 +10,109 @@ import javax.persistence.criteria.Root;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.qos.logback.classic.Logger;
 import job.resume.demo.entity.Client;
 import job.resume.demo.entity.Merchant;
 
+/**
+ * Data Access Object (DAO) for performing CRUD operations on {@link Client} entities.
+ * <p>
+ * This class provides methods to fetch, add, update, and delete clients from the database.
+ * All methods are transactional and use Hibernate's {@link SessionFactory} for persistence.
+ * </p>
+ */
 @Component
 public class ClientDAO {
 
-	@Autowired
-	private SessionFactory sessionFactory;
+	private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(ClientDAO.class);
 
-	@Transactional
-	public List<Client> getClients() {
-		CriteriaBuilder criteriaBuilder = sessionFactory.getCurrentSession().getCriteriaBuilder();
-		CriteriaQuery<Client> criteriaQuery = criteriaBuilder.createQuery(Client.class);
-		Root<Client> root = criteriaQuery.from(Client.class);
-		criteriaQuery.select(root);
+    @Autowired
+    private SessionFactory sessionFactory;
 
-		Query<Client> query = sessionFactory.getCurrentSession().createQuery(criteriaQuery);
-		List<Client> results = query.getResultList();
-		return results;
-	}
+	/**
+     * Retrieves all clients from the database.
+     *
+     * @return a list of all {@link Client} entities
+     */
+    @Transactional
+    public List<Client> getClients() {
+        LOGGER.info("Fetching all clients from the database");
+        CriteriaBuilder criteriaBuilder = sessionFactory.getCurrentSession().getCriteriaBuilder();
+        CriteriaQuery<Client> criteriaQuery = criteriaBuilder.createQuery(Client.class);
+        Root<Client> root = criteriaQuery.from(Client.class);
+        criteriaQuery.select(root);
 
-	@Transactional
-	public Client getClient(int id) {
-		return sessionFactory.getCurrentSession().load(Client.class, id);
-	}
+        Query<Client> query = sessionFactory.getCurrentSession().createQuery(criteriaQuery);
+        List<Client> results = query.getResultList();
+        LOGGER.info("Fetched {} clients", results.size());
+        return results;
+    }
 
-	@Transactional
-	public void addClient(Client client) {
-		client.setMerchant((Merchant) sessionFactory.getCurrentSession().load(Merchant.class, client.getMerchantId()));
-		sessionFactory.getCurrentSession().save(client);
-	}
+	/**
+     * Retrieves a client by its ID.
+     *
+     * @param id the client ID
+     * @return the {@link Client} entity, or null if not found
+     */
+    @Transactional
+    public Client getClient(int id) {
+        LOGGER.info("Fetching client with id: {}", id);
+        Client client = sessionFactory.getCurrentSession().load(Client.class, id);
+        LOGGER.info("Fetched client: {}", client != null ? client.getClientId() : "null");
+        return client;
+    }
 
-	@Transactional
-	public void updateClient(Client client) {
-		CriteriaBuilder criteriaBuilder = sessionFactory.getCurrentSession().getCriteriaBuilder();
-		CriteriaUpdate<Client> criteriaUpdate = criteriaBuilder.createCriteriaUpdate(Client.class);
-		Root<Client> root = criteriaUpdate.from(Client.class);
-		criteriaUpdate.set(root.get("firstName"), client.getFirstName())
-			.set(root.get("lastName"), client.getLastName())
-			.set(root.get("merchant"), client.getMerchant())
-			.set(root.get("job"), client.getJob())
-			.where(criteriaBuilder.equal(root.get("clientId"), client.getClientId()));
-		sessionFactory.getCurrentSession().createQuery(criteriaUpdate).executeUpdate();
-	}
+	 /**
+     * Adds a new client to the database.
+     *
+     * @param client the {@link Client} entity to add
+     */
+    @Transactional
+    public void addClient(Client client) {
+        LOGGER.info("Adding new client: {} {}", client.getFirstName(), client.getLastName());
+        client.setMerchant((Merchant) sessionFactory.getCurrentSession().load(Merchant.class, client.getMerchantId()));
+        sessionFactory.getCurrentSession().save(client);
+        LOGGER.info("Client added with id: {}", client.getClientId());
+    }
 
-	@Transactional
-	public void deleteClient(int id) {
-		CriteriaBuilder criteriaBuilder = sessionFactory.getCurrentSession().getCriteriaBuilder();
-		CriteriaDelete<Client> criteriaDelete = criteriaBuilder.createCriteriaDelete(Client.class);
-		Root<Client> root = criteriaDelete.from(Client.class);
-		criteriaDelete.where(criteriaBuilder.equal(root.get("clientId"), id));
-		sessionFactory.getCurrentSession().createQuery(criteriaDelete).executeUpdate();
-	}
+	/**
+     * Updates an existing client in the database.
+     *
+     * @param client the {@link Client} entity with updated information
+     */
+    @Transactional
+    public void updateClient(Client client) {
+        LOGGER.info("Updating client with id: {}", client.getClientId());
+        CriteriaBuilder criteriaBuilder = sessionFactory.getCurrentSession().getCriteriaBuilder();
+        CriteriaUpdate<Client> criteriaUpdate = criteriaBuilder.createCriteriaUpdate(Client.class);
+        Root<Client> root = criteriaUpdate.from(Client.class);
+        criteriaUpdate.set(root.get("firstName"), client.getFirstName())
+            .set(root.get("lastName"), client.getLastName())
+            .set(root.get("merchant"), client.getMerchant())
+            .set(root.get("job"), client.getJob())
+            .where(criteriaBuilder.equal(root.get("clientId"), client.getClientId()));
+        int updated = sessionFactory.getCurrentSession().createQuery(criteriaUpdate).executeUpdate();
+        LOGGER.info("Updated {} client(s)", updated);
+    }
+
+	/**
+     * Deletes a client from the database by its ID.
+     *
+     * @param id the client ID to delete
+     */
+    @Transactional
+    public void deleteClient(int id) {
+        LOGGER.info("Deleting client with id: {}", id);
+        CriteriaBuilder criteriaBuilder = sessionFactory.getCurrentSession().getCriteriaBuilder();
+        CriteriaDelete<Client> criteriaDelete = criteriaBuilder.createCriteriaDelete(Client.class);
+        Root<Client> root = criteriaDelete.from(Client.class);
+        criteriaDelete.where(criteriaBuilder.equal(root.get("clientId"), id));
+        int deleted = sessionFactory.getCurrentSession().createQuery(criteriaDelete).executeUpdate();
+        LOGGER.info("Deleted {} client(s)", deleted);
+    }
 }

@@ -10,6 +10,9 @@
         <c:if test="${addClientSuccess}">
             <div>Successfully added client with id: ${savedClientId}</div>
         </c:if>
+        <c:if test="${not empty errorMessage}">
+            <div class="error">${errorMessage}</div>
+        </c:if>
     
         <c:url var="add_client_url" value="/client/addClient"/>
         <form:form action="${add_client_url}" method="post" modelAttribute="client">

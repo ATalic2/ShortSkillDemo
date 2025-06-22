@@ -29,6 +29,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -72,6 +73,7 @@ public class ClientControllerIT {
 	}
 
 	@Test
+	@WithMockUser(username = "admin", roles = {"ADMIN"})
 	public void testGetCliens() throws Exception {
 		MvcResult mvcResult = mockMvc.perform(get("/client/viewClients")
 				.contentType("application/json"))
@@ -99,6 +101,7 @@ public class ClientControllerIT {
 	}
 
 	@Test
+	@WithMockUser(username = "admin", roles = {"ADMIN"})
 	public void testTest() throws Exception {
 		mockMvc.perform(get("/client/test")
 						.content("{\r\n" 
@@ -120,6 +123,7 @@ public class ClientControllerIT {
 	}
 	
 	@Test
+	@WithMockUser(username = "admin", roles = {"ADMIN"})
 	public void testGetAddClient() throws Exception {
 		MvcResult mvcResult = mockMvc.perform(get("/client/addClient")
 				.contentType("application/json"))
@@ -144,6 +148,7 @@ public class ClientControllerIT {
 	}
 	
 	@Test
+	@WithMockUser(username = "admin", roles = {"ADMIN"})
 	public void testPostAddClient() throws Exception {
 		Client client = new Client();
 		client.setFirstName("TestFirstName");
@@ -165,6 +170,7 @@ public class ClientControllerIT {
 	}
 	
 	@Test
+	@WithMockUser(username = "admin", roles = {"ADMIN"})
 	public void testDeleteClient() throws Exception {
 		Client client = new Client();
 		client.setFirstName("TestFirstName");
@@ -190,6 +196,7 @@ public class ClientControllerIT {
 	}
 	
 	@Test
+	@WithMockUser(username = "admin", roles = {"ADMIN"})
 	public void testGetGetClient() throws Exception {
 		MvcResult mvcResult = mockMvc.perform(get("/client?id=1")
 				.contentType("application/json"))
@@ -218,6 +225,7 @@ public class ClientControllerIT {
 	}
 	
 	@Test
+	@WithMockUser(username = "admin", roles = {"ADMIN"})
 	public void testPostUpdateClient() throws Exception {
 		Client client = new Client();
 		client.setFirstName("TestFirstName");

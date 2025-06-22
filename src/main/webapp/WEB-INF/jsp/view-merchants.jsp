@@ -6,6 +6,12 @@
 		<%@ include file="header.jsp" %>
     </head>
     <body>
+        <c:if test="${deleteClientSuccess}">
+            <div class="success">Client deleted successfully!</div>
+        </c:if>
+        <c:if test="${not empty errorMessage}">
+            <div class="error">${errorMessage}</div>
+        </c:if>
         <table>
             <thead>
                 <tr>

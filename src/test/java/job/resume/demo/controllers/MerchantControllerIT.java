@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -60,6 +61,7 @@ public class MerchantControllerIT {
 	}
 	
 	@Test
+	@WithMockUser(username = "admin", roles = {"ADMIN"})
 	public void testGetMerchants() throws Exception {
 		MvcResult mvcResult = mockMvc.perform(get("/merchant/viewMerchants")
 				.contentType("application/json"))
@@ -81,6 +83,7 @@ public class MerchantControllerIT {
 	}
 	
 	@Test
+	@WithMockUser(username = "admin", roles = {"ADMIN"})
 	public void testGetGetMerchant() throws Exception {
 		MvcResult mvcResult = mockMvc.perform(get("/merchant?id=1")
 				.contentType("application/json"))
@@ -97,6 +100,7 @@ public class MerchantControllerIT {
 	}
 	
 	@Test
+	@WithMockUser(username = "admin", roles = {"ADMIN"})
 	public void testGetAddClient() throws Exception {
 		MvcResult mvcResult = mockMvc.perform(get("/merchant/addMerchant")
 				.contentType("application/json"))
@@ -111,6 +115,7 @@ public class MerchantControllerIT {
 	}
 	
 	@Test
+	@WithMockUser(username = "admin", roles = {"ADMIN"})
 	public void testPostAddMerchant() throws Exception {
 		Merchant merchant = new Merchant();
 		merchant.setName("Test789");
@@ -127,6 +132,7 @@ public class MerchantControllerIT {
 	}
 	
 	@Test
+	@WithMockUser(username = "admin", roles = {"ADMIN"})
 	public void testPostUpdateMerchant() throws Exception {
 		Merchant merchant = new Merchant();
 		merchant.setName("Test789");

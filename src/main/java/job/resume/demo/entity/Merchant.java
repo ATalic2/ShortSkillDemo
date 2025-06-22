@@ -10,19 +10,43 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+/**
+ * Entity representing a merchant in the system.
+ * <p>
+ * Maps to the "merchants" table in the database and contains information such as
+ * the merchant's name and the list of associated clients.
+ * Includes validation constraints for required fields and maximum lengths.
+ * </p>
+ */
 @Entity
 @Table(name = "merchants")
 public class Merchant {
 
+	/**
+     * The unique identifier for the merchant.
+     */
 	@Id
 	@Column(nullable = false, length = 6)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int merchantId;
+
+	/**
+     * The name of the merchant.
+     * Cannot be blank and must be at most 100 characters.
+     */
 	@Column(length = 20)
+	@NotBlank(message = "Merchant name is required")
+    @Size(max = 100, message = "Merchant name must be at most 100 characters")
 	private String name;
+
+	/**
+     * The list of clients associated with this merchant.
+     */
 	@JsonIgnore
 	@OneToMany(mappedBy = "merchant", fetch = FetchType.LAZY)
 	private List<Client> clients;

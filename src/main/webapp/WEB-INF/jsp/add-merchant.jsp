@@ -8,7 +8,10 @@
     </head>
     <body>
         <c:if test="${addMerchantSuccess}">
-            <div>Successfully added merchant with id: ${savedMerchant.merchantId}</div>
+            <div class="success">Merchant added successfully!</div>
+        </c:if>
+        <c:if test="${not empty errorMessage}">
+            <div class="error">${errorMessage}</div>
         </c:if>
     
         <c:url var="add_merchant_url" value="/merchant/addMerchant"/>
