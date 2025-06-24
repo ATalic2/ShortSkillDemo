@@ -6,20 +6,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 
-import javax.sql.DataSource;
-
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -38,20 +31,6 @@ public class MerchantControllerIT {
 	private MockMvc mockMvc;
 	@Autowired
 	private CleanDataBase cleanDataBase;
-
-	// @BeforeAll
-	// public static void setup(@Autowired DataSource dataSource) throws SQLException {
-	// 	try (Connection conn = dataSource.getConnection()) {
-	// 		ScriptUtils.executeSqlScript(conn, new ClassPathResource("db/data.sql"));
-	// 	}
-	// }
-	
-	// @AfterAll
-	// public static void destroy(@Autowired DataSource dataSource) throws SQLException {
-	// 	try (Connection conn = dataSource.getConnection()) {
-	// 		ScriptUtils.executeSqlScript(conn, new ClassPathResource("db/drop-table.sql"));
-	// 	}
-	// }
 	
 	@BeforeEach
 	public void cleanUp() {
