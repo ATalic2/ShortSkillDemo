@@ -2,18 +2,16 @@ package job.resume.demo.dao;
 
 import java.util.List;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Root;
-import javax.transaction.Transactional;
-
-import org.hibernate.SessionFactory;
-import org.hibernate.query.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaDelete;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.CriteriaUpdate;
+import jakarta.persistence.criteria.Root;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.qos.logback.classic.Logger;
 import job.resume.demo.entity.Merchant;
@@ -22,7 +20,7 @@ import job.resume.demo.entity.Merchant;
  * Data Access Object (DAO) for performing CRUD operations on {@link Merchant} entities.
  * <p>
  * This class provides methods to fetch, add, update, and delete merchants from the database.
- * All methods are transactional and use Hibernate's {@link SessionFactory} for persistence.
+ * All methods are transactional and use JPA's {@link EntityManager} for persistence.
  * </p>
  */
 @Component
@@ -30,8 +28,8 @@ public class MerchantDAO {
 
 	private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(MerchantDAO.class);
 
-	@Autowired
-	private SessionFactory sessionFactory;
+    @PersistenceContext
+    private EntityManager entityManager;
 
 	/**
      * Retrieves all merchants from the database.
@@ -40,15 +38,14 @@ public class MerchantDAO {
      */
 	@Transactional
 	public List<Merchant> getMerchants() {
-		LOGGER.info("Fetching all merchants from the database");
-		CriteriaBuilder criteriaBuilder = sessionFactory.getCurrentSession().getCriteriaBuilder();
-		CriteriaQuery<Merchant> criteriaQuery = criteriaBuilder.createQuery(Merchant.class);
-		Root<Merchant> root = criteriaQuery.from(Merchant.class);
-		criteriaQuery.select(root);
-		Query<Merchant> query = sessionFactory.getCurrentSession().createQuery(criteriaQuery);
-		List<Merchant> results = query.getResultList();
-		LOGGER.info("Fetched {} merchants", results.size());
-		return results;
+        LOGGER.info("Fetching all merchants from the database");
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Merchant> criteriaQuery = criteriaBuilder.createQuery(Merchant.class);
+        Root<Merchant> root = criteriaQuery.from(Merchant.class);
+        criteriaQuery.select(root);
+        List<Merchant> results = entityManager.createQuery(criteriaQuery).getResultList();
+        LOGGER.info("Fetched {} merchants", results.size());
+        return results;
 	}
 
 	/**
@@ -59,10 +56,10 @@ public class MerchantDAO {
      */
 	@Transactional
 	public Merchant getMerchant(int merchantId) {
-		LOGGER.info("Fetching merchant with id: {}", merchantId);
-		Merchant merchant = sessionFactory.getCurrentSession().load(Merchant.class, merchantId);
-		LOGGER.info("Fetched merchant: {}", merchant != null ? merchant.getMerchantId() : "null");
-		return merchant;
+        LOGGER.info("Fetching merchant with id: {}", merchantId);
+        Merchant merchant = entityManager.find(Merchant.class, merchantId);
+        LOGGER.info("Fetched merchant: {}", merchant != null ? merchant.getMerchantId() : "null");
+        return merchant;
 	}
 
 	/**
@@ -73,14 +70,14 @@ public class MerchantDAO {
      */
 	@Transactional
 	public void updateMerchant(int id, Merchant merchant) {
-		LOGGER.info("Updating merchant with id: {}", id);
-		CriteriaBuilder criteriaBuilder = sessionFactory.getCurrentSession().getCriteriaBuilder();
-		CriteriaUpdate<Merchant> criteriaUpdate = criteriaBuilder.createCriteriaUpdate(Merchant.class);
-		Root<Merchant> root = criteriaUpdate.from(Merchant.class);
-		criteriaUpdate.set(root.get("name"), merchant.getName())
-				.where(criteriaBuilder.equal(root.get("merchantId"), id));
-		int updated = sessionFactory.getCurrentSession().createQuery(criteriaUpdate).executeUpdate();
-		LOGGER.info("Updated {} merchant(s)", updated);
+        LOGGER.info("Updating merchant with id: {}", id);
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaUpdate<Merchant> criteriaUpdate = criteriaBuilder.createCriteriaUpdate(Merchant.class);
+        Root<Merchant> root = criteriaUpdate.from(Merchant.class);
+        criteriaUpdate.set(root.get("name"), merchant.getName())
+                .where(criteriaBuilder.equal(root.get("merchantId"), id));
+        int updated = entityManager.createQuery(criteriaUpdate).executeUpdate();
+        LOGGER.info("Updated {} merchant(s)", updated);
 	}
 
 	/**
@@ -90,9 +87,9 @@ public class MerchantDAO {
      */
 	@Transactional
 	public void addMerchant(Merchant merchant) {
-		LOGGER.info("Adding new merchant: {}", merchant.getName());
-		sessionFactory.getCurrentSession().save(merchant);
-		LOGGER.info("Merchant added with id: {}", merchant.getMerchantId());
+        LOGGER.info("Adding new merchant: {}", merchant.getName());
+        entityManager.persist(merchant);
+        LOGGER.info("Merchant added with id: {}", merchant.getMerchantId());
 	}
 
 	/**
@@ -102,12 +99,13 @@ public class MerchantDAO {
      */
 	@Transactional
 	public void deleteMerchant(int id) {
-		LOGGER.info("Deleting merchant with id: {}", id);
-		CriteriaBuilder criteriaBuilder = sessionFactory.getCurrentSession().getCriteriaBuilder();
-		CriteriaDelete<Merchant> criteriaDelete = criteriaBuilder.createCriteriaDelete(Merchant.class);
-		Root<Merchant> root = criteriaDelete.from(Merchant.class);
-		criteriaDelete.where(criteriaBuilder.equal(root.get("merchantId"), id));
-		int deleted = sessionFactory.getCurrentSession().createQuery(criteriaDelete).executeUpdate();
-		LOGGER.info("Deleted {} merchant(s)", deleted);
+        LOGGER.info("Deleting merchant with id: {}", id);
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaDelete<Merchant> criteriaDelete = criteriaBuilder.createCriteriaDelete(Merchant.class);
+        Root<Merchant> root = criteriaDelete.from(Merchant.class);
+        // Always set a where clause to avoid Hibernate 6.x NPE
+        criteriaDelete.where(criteriaBuilder.and(criteriaBuilder.equal(root.get("merchantId"), id)));
+        int deleted = entityManager.createQuery(criteriaDelete).executeUpdate();
+        LOGGER.info("Deleted {} merchant(s)", deleted);
 	}
 }

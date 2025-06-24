@@ -14,11 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import job.resume.demo.TestConfiguration;
+import job.resume.demo.TestDemoConfiguration;
 import job.resume.demo.entity.Client;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = TestConfiguration.class)
+@ContextConfiguration(classes = TestDemoConfiguration.class)
 public class JsonConverterTest {
 
 	@Autowired

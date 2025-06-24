@@ -11,10 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import job.resume.demo.CleanDataBase;
-import job.resume.demo.TestConfiguration;
+import job.resume.demo.TestDemoConfiguration;
 import job.resume.demo.entity.Merchant;
 
-@SpringBootTest(classes = TestConfiguration.class)
+@SpringBootTest(classes = TestDemoConfiguration.class)
 public class MerchantDAOTest {
 	
 	@Autowired

@@ -1,19 +1,18 @@
 package job.resume.demo.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 /**
  * Entity representing a client in the system.
@@ -57,9 +56,9 @@ public class Client {
      * The job or occupation of the client.
      * Cannot be blank and must be at most 100 characters.
      */
+	@Column(length = 20)
 	@NotBlank(message = "Job is required")
     @Size(max = 100, message = "Job must be at most 100 characters")
-	@Column(length = 20)
 	private String job;
 
 	/**
@@ -74,7 +73,7 @@ public class Client {
      */
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "merchantId")
+	@JoinColumn(name = "merchant_id")
 	private Merchant merchant;
 
 	public int getId() {

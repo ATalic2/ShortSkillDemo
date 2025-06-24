@@ -2,16 +2,15 @@ package job.resume.demo.dao;
 
 import java.util.List;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.CriteriaUpdate;
+import jakarta.persistence.criteria.CriteriaDelete;
+import jakarta.persistence.criteria.Root;
 
-import org.hibernate.SessionFactory;
-import org.hibernate.query.Query;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,8 +30,8 @@ public class ClientDAO {
 
 	private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(ClientDAO.class);
 
-    @Autowired
-    private SessionFactory sessionFactory;
+    @PersistenceContext
+    private EntityManager entityManager;
 
 	/**
      * Retrieves all clients from the database.
@@ -42,13 +41,12 @@ public class ClientDAO {
     @Transactional
     public List<Client> getClients() {
         LOGGER.info("Fetching all clients from the database");
-        CriteriaBuilder criteriaBuilder = sessionFactory.getCurrentSession().getCriteriaBuilder();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Client> criteriaQuery = criteriaBuilder.createQuery(Client.class);
         Root<Client> root = criteriaQuery.from(Client.class);
         criteriaQuery.select(root);
 
-        Query<Client> query = sessionFactory.getCurrentSession().createQuery(criteriaQuery);
-        List<Client> results = query.getResultList();
+        List<Client> results = entityManager.createQuery(criteriaQuery).getResultList();
         LOGGER.info("Fetched {} clients", results.size());
         return results;
     }
@@ -62,7 +60,7 @@ public class ClientDAO {
     @Transactional
     public Client getClient(int id) {
         LOGGER.info("Fetching client with id: {}", id);
-        Client client = sessionFactory.getCurrentSession().load(Client.class, id);
+        Client client = entityManager.find(Client.class, id);
         LOGGER.info("Fetched client: {}", client != null ? client.getClientId() : "null");
         return client;
     }
@@ -75,8 +73,8 @@ public class ClientDAO {
     @Transactional
     public void addClient(Client client) {
         LOGGER.info("Adding new client: {} {}", client.getFirstName(), client.getLastName());
-        client.setMerchant((Merchant) sessionFactory.getCurrentSession().load(Merchant.class, client.getMerchantId()));
-        sessionFactory.getCurrentSession().save(client);
+        client.setMerchant(entityManager.find(Merchant.class, client.getMerchantId()));
+        entityManager.persist(client);
         LOGGER.info("Client added with id: {}", client.getClientId());
     }
 
@@ -88,7 +86,7 @@ public class ClientDAO {
     @Transactional
     public void updateClient(Client client) {
         LOGGER.info("Updating client with id: {}", client.getClientId());
-        CriteriaBuilder criteriaBuilder = sessionFactory.getCurrentSession().getCriteriaBuilder();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaUpdate<Client> criteriaUpdate = criteriaBuilder.createCriteriaUpdate(Client.class);
         Root<Client> root = criteriaUpdate.from(Client.class);
         criteriaUpdate.set(root.get("firstName"), client.getFirstName())
@@ -96,7 +94,7 @@ public class ClientDAO {
             .set(root.get("merchant"), client.getMerchant())
             .set(root.get("job"), client.getJob())
             .where(criteriaBuilder.equal(root.get("clientId"), client.getClientId()));
-        int updated = sessionFactory.getCurrentSession().createQuery(criteriaUpdate).executeUpdate();
+        int updated = entityManager.createQuery(criteriaUpdate).executeUpdate();
         LOGGER.info("Updated {} client(s)", updated);
     }
 
@@ -108,11 +106,15 @@ public class ClientDAO {
     @Transactional
     public void deleteClient(int id) {
         LOGGER.info("Deleting client with id: {}", id);
-        CriteriaBuilder criteriaBuilder = sessionFactory.getCurrentSession().getCriteriaBuilder();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaDelete<Client> criteriaDelete = criteriaBuilder.createCriteriaDelete(Client.class);
         Root<Client> root = criteriaDelete.from(Client.class);
-        criteriaDelete.where(criteriaBuilder.equal(root.get("clientId"), id));
-        int deleted = sessionFactory.getCurrentSession().createQuery(criteriaDelete).executeUpdate();
+        if (id > 0) {
+            criteriaDelete.where(criteriaBuilder.equal(root.get("clientId"), id));
+        } else {
+            criteriaDelete.where(criteriaBuilder.conjunction());
+        }
+        int deleted = entityManager.createQuery(criteriaDelete).executeUpdate();
         LOGGER.info("Deleted {} client(s)", deleted);
     }
 }

@@ -9,14 +9,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import job.resume.demo.CleanDataBase;
-import job.resume.demo.TestConfiguration;
+import job.resume.demo.TestDemoConfiguration;
 import job.resume.demo.entity.Client;
 
-@SpringBootTest(classes = TestConfiguration.class)
-public class ClientDAOTest extends AbstractJUnit4SpringContextTests {
+@SpringBootTest(classes = TestDemoConfiguration.class)
+public class ClientDAOTest {
 	
 	@Autowired
 	private ClientDAO clientDAO;
