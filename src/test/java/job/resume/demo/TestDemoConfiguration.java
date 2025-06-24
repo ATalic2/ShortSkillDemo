@@ -5,6 +5,6 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ComponentScan(basePackages = "job.resume.demo")
-public class TestConfiguration {
+public class TestDemoConfiguration {
 
 }

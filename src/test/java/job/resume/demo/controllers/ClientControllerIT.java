@@ -25,23 +25,22 @@ import org.junit.jupiter.api.Test;
 import ch.qos.logback.classic.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import job.resume.demo.CleanDataBase;
-import job.resume.demo.TestConfiguration;
 import job.resume.demo.dao.ClientDAO;
 import job.resume.demo.entity.Client;
 import job.resume.demo.entity.Merchant;
 
-@ContextConfiguration(classes = TestConfiguration.class)
-@WebMvcTest(ClientController.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 public class ClientControllerIT {
 	
 	private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(ClientControllerIT.class);
@@ -53,19 +52,22 @@ public class ClientControllerIT {
 	@Autowired
 	private CleanDataBase cleanDataBase;
 
-	@BeforeAll
-	public static void setup(@Autowired DataSource dataSource) throws SQLException {
-		try (Connection conn = dataSource.getConnection()) {
-			ScriptUtils.executeSqlScript(conn, new ClassPathResource("db/data.sql"));
-		}
-	}
+	// @BeforeAll
+	// public static void setup(@Autowired DataSource dataSource) throws SQLException {
+	// 	try (Connection conn = dataSource.getConnection()) {
+	// 		ScriptUtils.executeSqlScript(conn, new ClassPathResource("db/drop-table.sql"));
+	// 	}
+	// 	try (Connection conn = dataSource.getConnection()) {
+	// 		ScriptUtils.executeSqlScript(conn, new ClassPathResource("db/data.sql"));
+	// 	}
+	// }
 	
-	@AfterAll
-	public static void destroy(@Autowired DataSource dataSource) throws SQLException {
-		try (Connection conn = dataSource.getConnection()) {
-			ScriptUtils.executeSqlScript(conn, new ClassPathResource("db/drop-table.sql"));
-		}
-	}
+	// @AfterAll
+	// public static void destroy(@Autowired DataSource dataSource) throws SQLException {
+	// 	try (Connection conn = dataSource.getConnection()) {
+	// 		ScriptUtils.executeSqlScript(conn, new ClassPathResource("db/drop-table.sql"));
+	// 	}
+	// }
 	
 	@BeforeEach
 	public void cleanUp() {

@@ -4,9 +4,8 @@ import ch.qos.logback.classic.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 
-@SpringBootApplication(scanBasePackages = "job.resume.demo", exclude = HibernateJpaAutoConfiguration.class)
+@SpringBootApplication(scanBasePackages = "job.resume.demo")
 public class DemoApplication {
 	private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(DemoApplication.class);
 

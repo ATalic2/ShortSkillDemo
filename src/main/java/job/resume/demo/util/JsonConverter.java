@@ -1,6 +1,6 @@
 package job.resume.demo.util;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import ch.qos.logback.classic.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,14 +9,14 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
+import com.fasterxml.jackson.datatype.hibernate6.Hibernate6Module;
 
 /**
  * Utility component for converting between Java objects and JSON strings.
  * <p>
  * Uses Jackson's {@link ObjectMapper} for serialization and deserialization,
  * with configuration to ignore unknown properties and exclude null values.
- * Supports Hibernate types via the {@link Hibernate5Module}.
+ * Supports Hibernate types via the {@link Hibernate6Module}.
  * </p>
  */
 @Component
@@ -34,7 +34,7 @@ public class JsonConverter {
 		objectMapper = new ObjectMapper();
 		objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		objectMapper.registerModule(new Hibernate5Module());
+		objectMapper.registerModule(new Hibernate6Module());
 	}
 
 	/**
